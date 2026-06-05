@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require("multer");
+const path = require("path");
 
 const app = express();
 app.use(express.json());
@@ -47,6 +49,24 @@ app.post("/product", (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.headers;
   res.json({ username, password });
+});
+
+const storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.post("/uplode", upload.single("photo"), (req, res) => {
+  const detailes = req.file;
+  res.status(201).json({
+    msg: "request succesfull",
+    detailes: detailes,
+  });
 });
 
 app.listen(port, () => {
